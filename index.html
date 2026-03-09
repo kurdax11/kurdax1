@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KURDAX11 | HUB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Lexend:wght@900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --card: #0e0e10;
+            --accent: #ffffff;
+            --dim: #52525b;
+            --border: #18181b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif; display: flex; justify-content: center; padding: 40px 20px; }
+        .container { max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
+
+        /* --- MUSIC HUB --- */
+        .music-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stream-info { font-size: 0.7rem; font-weight: 800; color: var(--dim); letter-spacing: 1px; }
+        .play-btn { background: #fff; color: #000; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; cursor: pointer; }
+
+        /* --- HEADER --- */
+        .header h1 { font-family: 'Lexend', sans-serif; font-size: 4.5rem; letter-spacing: -5px; color: var(--accent); margin-bottom: 10px; }
+
+        /* --- HONORABLE MENTIONS --- */
+        .mentions-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 35px; }
+        .label { font-size: 0.6rem; font-weight: 800; color: var(--dim); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; display: block; }
+        
+        .elite-name { font-family: 'Lexend', sans-serif; font-size: 4rem; color: #fff; line-height: 1; margin-bottom: 25px; }
+        
+        .list-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; border-top: 1px solid var(--border); padding-top: 20px; }
+        .list-name { font-size: 1.1rem; font-weight: 600; color: var(--dim); }
+
+        /* --- CHAT SECTION --- */
+        .chat-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; height: 480px; display: flex; flex-direction: column; overflow: hidden; }
+        #chat-flow { flex-grow: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-row { font-size: 0.95rem; line-height: 1.5; }
+        .u-tag { font-weight: 800; color: #fff; margin-right: 8px; }
+        .u-msg { color: var(--dim); }
+
+        /* --- INPUTS --- */
+        .input-bar { padding: 20px; background: #000; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        input { flex-grow: 1; background: #080808; border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: inherit; outline: none; }
+        .btn-send { background: #fff; color: #000; border: none; padding: 0 25px; border-radius: 6px; font-weight: 900; cursor: pointer; }
+
+        /* --- LOG --- */
+        .activity-log { font-family: monospace; font-size: 0.65rem; color: #222; padding: 10px; border: 1px solid #111; border-radius: 6px; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <audio id="player" loop>
+            <source src="YOUR_SONG_URL_HERE" type="audio/mpeg">
+        </audio>
+
+        <div class="music-panel">
+            <div class="stream-info">STATUS: <span id="m-status">IDLE</span> | CHANNEL_01</div>
+            <button class="play-btn" onclick="togglePlay()" id="p-btn">START AUDIO</button>
+        </div>
+
+        <header class="header">
+            <h1>KURDAX11</h1>
+        </header>
+
+        <section class="mentions-box">
+            <span class="label">Primary Reference</span>
+            <div class="elite-name">RAWEZH</div>
+            
+            <span class="label">Authorized List</span>
+            <div class="list-grid">
+                <div class="list-name">SHAHO</div>
+                <div class="list-name">ROMAN</div>
+                <div class="list-name">ROMA</div>
+                <div class="list-name">XULA</div>
+            </div>
+        </section>
+
+        <section class="chat-section">
+            <div id="chat-flow">
+                <div class="chat-row"><span class="u-tag">System:</span> <span class="u-msg">Establish username to begin.</span></div>
+            </div>
+
+            <div class="input-bar">
+                <div id="user-gate" style="display:contents;">
+                    <input type="text" id="user-input" placeholder="Set Username...">
+                    <button class="btn-send" onclick="joinHub()">JOIN</button>
+                </div>
+                <div id="chat-gate" class="hidden" style="display:contents;">
+                    <input type="text" id="chat-input" placeholder="Type a message...">
+                    <button class="btn-send" onclick="sendMsg()">SEND</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="activity-log" id="sys-log">
+            > SYSTEM BOOT SEQ... OK.
+        </div>
+    </div>
+
+    <script>
+        let activeUser = "";
+        const audio = document.getElementById('player');
+        const pBtn = document.getElementById('p-btn');
+        const mStatus = document.getElementById('m-status');
+
+        // Music Toggle Logic
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                pBtn.innerText = "PAUSE AUDIO";
+                mStatus.innerText = "PLAYING";
+                mStatus.style.color = "#fff";
+            } else {
+                audio.pause();
+                pBtn.innerText = "START AUDIO";
+                mStatus.innerText = "IDLE";
+                mStatus.style.color = "var(--dim)";
+            }
+        }
+
+        // Login Logic
+        function joinHub() {
+            const input = document.getElementById('user-input');
+            const val = input.value.trim();
+            if (val) {
+                activeUser = val;
+                document.getElementById('user-gate').classList.add('hidden');
+                document.getElementById('chat-gate').classList.remove('hidden');
+                
+                logSystem(`User "${activeUser}" joined the session.`);
+                pushMsg("System", `Connection established. Welcome, ${activeUser}.`);
+            }
+        }
+
+        // Chat Logic
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if (val) {
+                pushMsg(activeUser, val);
+                input.value = "";
+            }
+        }
+
+        // Display Message
+        function pushMsg(u, t) {
+            const flow = document.getElementById('chat-flow');
+            const div = document.createElement('div');
+            div.className = 'chat-row';
+            div.innerHTML = `<span class="u-tag">${u}:</span> <span class="u-msg">${t}</span>`;
+            flow.appendChild(div);
+            flow.scrollTop = flow.scrollHeight;
+        }
+
+        // System Log Updater
+        function logSystem(msg) {
+            const log = document.getElementById('sys-log');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<br>> [${time}] ${msg}`;
+        }
+
+<audio id="player" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>        // Enter key listeners
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (!activeUser) {
+                    joinHub();
+                } else {
+                    sendMsg();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
